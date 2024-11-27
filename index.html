@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spin the Wheel with Physics</title>
+    <title>Spin the Wheel Counter</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -92,6 +92,7 @@
 
         function dragWheel(event) {
             if (!isDragging) return;
+
             const rect = wheel.getBoundingClientRect();
             const centerX = rect.left + rect.width / 2;
             const centerY = rect.top + rect.height / 2;
@@ -100,6 +101,16 @@
             const delta = angle - (currentAngle + startAngle);
             lastDelta = delta;
             currentAngle += delta;
+
+            // Track total rotation
+            totalRotation += delta;
+
+            // Increment counter on full rotations
+            if (Math.abs(totalRotation) >= 360) {
+                totalRotation = totalRotation % 360; // Reset after full rotation
+                incrementCounter(); // Increment the counter
+            }
+
             wheel.style.transform = `rotate(${currentAngle}deg)`;
         }
 
@@ -107,26 +118,16 @@
             if (!isDragging) return;
             isDragging = false;
 
-            // Add spin momentum based on the last drag speed
-            spinMomentum = lastDelta * 10;
+            // Add reduced spin momentum for a small post-release spin
+            spinMomentum = lastDelta * 2; // Smaller momentum factor for controlled spin
             applyMomentum();
         }
 
         function applyMomentum() {
-            if (Math.abs(spinMomentum) > 1) {
+            if (Math.abs(spinMomentum) > 0.5) {
                 isSpinning = true;
                 currentAngle += spinMomentum;
-                spinMomentum *= 0.95; // Gradually slow down
-
-                // Track total rotation
-                totalRotation += spinMomentum;
-
-                // Check for full rotations (360 degrees)
-                if (Math.abs(totalRotation) >= 360) {
-                    totalRotation = totalRotation % 360; // Reset totalRotation to avoid overflow
-                    incrementCounter(); // Increment the counter for every full rotation
-                }
-
+                spinMomentum *= 0.9; // Slow down quickly
                 wheel.style.transform = `rotate(${currentAngle}deg)`;
                 requestAnimationFrame(applyMomentum);
             } else {
