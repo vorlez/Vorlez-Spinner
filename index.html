@@ -76,7 +76,7 @@
         let count = 0; // The counter for full rotations
         let currentAngle = 0; // The current angle of the wheel
         let lastAngle = 0; // The last recorded angle
-        let crossedZero = false; // Flag to detect 0-degree crossing
+        let totalRotation = 0; // Cumulative rotation
         let isDragging = false; // Whether the wheel is being dragged
 
         const wheel = document.getElementById('wheel');
@@ -102,6 +102,7 @@
         function startDrag(event) {
             isDragging = true;
             lastAngle = normalizeAngle(getAngle(event)); // Get the initial angle when the drag starts
+            totalRotation = 0; // Reset total rotation for a new spin
         }
 
         // Drag the wheel
@@ -113,22 +114,21 @@
 
             // Handle angle wrap-around from 0 to 360
             if (deltaAngle > 180) {
-                currentAngle -= 360 - deltaAngle; // Correct for clockwise wrap-around
+                totalRotation -= 360 - deltaAngle; // Correct for clockwise wrap-around
             } else if (deltaAngle < -180) {
-                currentAngle += 360 + deltaAngle; // Correct for counterclockwise wrap-around
+                totalRotation += 360 + deltaAngle; // Correct for counterclockwise wrap-around
             } else {
-                currentAngle += deltaAngle; // Normal rotation
+                totalRotation += deltaAngle; // Normal rotation
             }
 
-            // Detect 0-degree crossing
-            if (Math.abs(currentAngle % 360) < 5 && !crossedZero) {
+            // Check if a full rotation is completed
+            if (Math.abs(totalRotation) >= 360) {
                 count++;
-                crossedZero = true; // Ensure only one increment per crossing
-            } else if (Math.abs(currentAngle % 360) > 5) {
-                crossedZero = false; // Reset flag once out of the 0-degree range
+                totalRotation = 0; // Reset total rotation after counting
             }
 
             // Update the wheel rotation and displays
+            currentAngle = (currentAngle + deltaAngle) % 360; // Update the wheel's displayed rotation
             wheel.style.transform = `rotate(${currentAngle}deg)`;
             counterDisplay.innerText = count; // Update the count display
             angleDisplay.innerText = Math.round(currentAngle % 360); // Display the angle
