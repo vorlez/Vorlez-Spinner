@@ -78,7 +78,7 @@
 </head>
 <body>
     <h1>Spin the Wheel Counter</h1>
-    <p>Drag and spin the wheel to count when the arrow crosses the reference arrow!</p>
+    <p>Drag and spin the wheel. Count increments when the spinning arrow crosses the reference arrow!</p>
     <div class="wheel-container">
         <div class="wheel" id="wheel">
             <div class="arrow" id="arrow"></div> <!-- Rotating arrow -->
@@ -99,8 +99,7 @@
         let startAngle = 0;
         let currentAngle = 0;
         let totalRotation = 0;
-        let previousCrossingAngle = 0;
-        let crossingCount = 0;
+        let lastCrossingAngle = 0;
 
         // Calculate angle between two points
         function angleFromEvent(event, centerX, centerY) {
@@ -136,13 +135,17 @@
 
             // Check if the arrow crosses the reference arrow
             if (Math.abs(totalRotation) >= 360) {
-                // Count the crossings based on when it crosses the reference arrow
                 let fullRotations = Math.floor(Math.abs(totalRotation) / 360);
                 totalRotation -= fullRotations * 360; // Adjust remaining rotation
 
-                // Increase the count each time a full 360° rotation happens
-                crossingCount += fullRotations;
-                document.getElementById('counter').innerText = crossingCount;
+                // Only increment if we are crossing the reference arrow after a full rotation
+                if (totalRotation < 0 && lastCrossingAngle >= 0) {
+                    count++;
+                    document.getElementById('counter').innerText = count;
+                }
+
+                // Store the last crossing angle to track direction
+                lastCrossingAngle = totalRotation;
             }
 
             // Rotate the wheel
@@ -155,8 +158,8 @@
         }
 
         function resetCounter() {
-            crossingCount = 0;
-            document.getElementById('counter').innerText = crossingCount;
+            count = 0;
+            document.getElementById('counter').innerText = count;
         }
 
         // Prevent text selection during dragging
