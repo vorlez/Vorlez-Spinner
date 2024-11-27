@@ -73,7 +73,7 @@
     <p>Angle: <span class="counter" id="angle">0</span>°</p>
 
     <script>
-        let count = 0; // The counter for full rotations
+        let count = localStorage.getItem('coinCount') ? parseInt(localStorage.getItem('coinCount')) : 0; // Load saved coin count from localStorage or start at 0
         let currentAngle = 0; // The current angle of the wheel
         let lastAngle = 0; // The last recorded angle
         let totalRotation = 0; // Cumulative rotation
@@ -125,6 +125,7 @@
             if (Math.abs(totalRotation) >= 360) {
                 count++;
                 totalRotation = 0; // Reset total rotation after counting
+                localStorage.setItem('coinCount', count); // Save the updated coin count in localStorage
             }
 
             // Update the wheel rotation and displays
@@ -155,6 +156,9 @@
         window.addEventListener('touchmove', (event) => {
             event.preventDefault(); // Prevent the page from refreshing when swiping
         }, { passive: false });
+
+        // Set the initial coin count from localStorage
+        counterDisplay.innerText = count;
     </script>
 </body>
 </html>
