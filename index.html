@@ -3,17 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Click Counter with Background</title>
+    <title>Spin the Wheel Counter</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
             margin-top: 50px;
-            background-image: url('olli-the-polite-cat.jpg'); /* Replace with your image file name */
-            background-size: cover; /* Ensures the image covers the entire background */
-            background-position: center; /* Centers the image */
-            color: white; /* Makes text readable if the background is dark */
-            text-shadow: 1px 1px 2px black; /* Adds a subtle shadow for better readability */
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        p {
+            font-size: 18px;
+        }
+        .wheel {
+            width: 200px;
+            height: 200px;
+            border: 5px solid #4CAF50;
+            border-radius: 50%;
+            margin: 20px auto;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            background: linear-gradient(45deg, #4CAF50, #8BC34A);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        .wheel span {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px black;
         }
         button {
             padding: 10px 20px;
@@ -21,36 +42,52 @@
             cursor: pointer;
             margin: 10px;
         }
-        h1 {
-            color: #FFD700; /* A gold color to make the heading pop */
-        }
     </style>
 </head>
 <body>
-    <h1>Click Counter with Save</h1>
-    <p>You have clicked the button <span id="counter">0</span> times.</p>
-    <button onclick="incrementCounter()">Click Me!</button>
+    <h1>Spin the Wheel Counter</h1>
+    <p>Spin the wheel to increase your count!</p>
+    <div class="wheel" id="wheel" onclick="spinWheel()">
+        <span>Spin Me!</span>
+    </div>
+    <p>Your count: <span id="counter">0</span></p>
     <button onclick="resetCounter()">Reset</button>
 
     <script>
-        // Load the counter value from localStorage, or default to 0
         let count = localStorage.getItem('clickCount') ? parseInt(localStorage.getItem('clickCount')) : 0;
 
         // Display the saved counter value
         document.getElementById('counter').innerText = count;
 
-        // Increment the counter and save the new value
-        function incrementCounter() {
-            count++;
-            document.getElementById('counter').innerText = count;
-            localStorage.setItem('clickCount', count); // Save to localStorage
+        function spinWheel() {
+            const wheel = document.getElementById('wheel');
+            const duration = Math.random() * 2 + 3; // Random spin time between 3 and 5 seconds
+            const spinDegrees = Math.floor(Math.random() * 360) + 720; // At least 2 full spins
+
+            // Add animation class
+            wheel.style.transition = `transform ${duration}s ease-out`;
+            wheel.style.transform = `rotate(${spinDegrees}deg)`;
+
+            // Disable further spins during animation
+            wheel.style.pointerEvents = 'none';
+
+            // Update the counter when the spin ends
+            setTimeout(() => {
+                count++;
+                document.getElementById('counter').innerText = count;
+                localStorage.setItem('clickCount', count);
+
+                // Reset styles to allow another spin
+                wheel.style.pointerEvents = 'auto';
+                wheel.style.transition = 'none';
+                wheel.style.transform = 'rotate(0deg)';
+            }, duration * 1000); // Convert seconds to milliseconds
         }
 
-        // Reset the counter and clear localStorage
         function resetCounter() {
             count = 0;
             document.getElementById('counter').innerText = count;
-            localStorage.removeItem('clickCount'); // Clear the saved value
+            localStorage.removeItem('clickCount');
         }
     </script>
 </body>
