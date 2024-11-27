@@ -9,6 +9,7 @@
             font-family: Arial, sans-serif;
             text-align: center;
             margin-top: 50px;
+            user-select: none; /* Prevent text selection on the whole page */
         }
         h1 {
             color: #4CAF50;
@@ -40,7 +41,7 @@
             font-weight: bold;
             color: white;
             text-shadow: 1px 1px 2px black;
-            pointer-events: none;
+            pointer-events: none; /* Prevent pointer events from affecting text */
         }
         button {
             padding: 10px 20px;
@@ -70,6 +71,7 @@
         let lastDelta = 0;
         let spinMomentum = 0;
         let isSpinning = false;
+        let totalRotation = 0; // Track total degrees rotated
 
         function angleFromEvent(event, centerX, centerY) {
             const x = event.clientX - centerX;
@@ -115,12 +117,20 @@
                 isSpinning = true;
                 currentAngle += spinMomentum;
                 spinMomentum *= 0.95; // Gradually slow down
-                wheel.style.transform = `rotate(${currentAngle}deg)`;
 
+                // Track total rotation
+                totalRotation += spinMomentum;
+
+                // Check for full rotations (360 degrees)
+                if (Math.abs(totalRotation) >= 360) {
+                    totalRotation = totalRotation % 360; // Reset totalRotation to avoid overflow
+                    incrementCounter(); // Increment the counter for every full rotation
+                }
+
+                wheel.style.transform = `rotate(${currentAngle}deg)`;
                 requestAnimationFrame(applyMomentum);
             } else {
                 isSpinning = false;
-                incrementCounter();
             }
         }
 
@@ -135,6 +145,9 @@
             document.getElementById('counter').innerText = count;
             localStorage.removeItem('clickCount');
         }
+
+        // Prevent text selection during dragging
+        window.addEventListener('mousedown', (event) => event.preventDefault());
 
         wheel.addEventListener('mousedown', startDrag);
         window.addEventListener('mousemove', dragWheel);
