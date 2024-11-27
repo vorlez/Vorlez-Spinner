@@ -116,10 +116,11 @@
             // Track total rotation
             totalRotation += delta;
 
-            // Increment counter on full rotations
+            // Check for complete full rotation
             if (Math.abs(totalRotation) >= 360) {
-                totalRotation = totalRotation % 360; // Reset totalRotation after full rotation
-                incrementCounter(); // Increment the counter
+                const fullRotations = Math.floor(Math.abs(totalRotation) / 360); // Get number of full rotations
+                totalRotation -= fullRotations * 360; // Adjust remaining degrees
+                incrementCounter(fullRotations); // Increment by the number of full rotations
             }
 
             wheel.style.transform = `rotate(${currentAngle}deg)`;
@@ -146,8 +147,8 @@
             }
         }
 
-        function incrementCounter() {
-            count++;
+        function incrementCounter(rotations) {
+            count += rotations; // Increment the counter by the number of full rotations
             document.getElementById('counter').innerText = count;
             localStorage.setItem('clickCount', count);
         }
