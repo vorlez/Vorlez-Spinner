@@ -20,16 +20,17 @@
         p {
             font-size: 18px;
         }
+        .wheel-container {
+            position: relative;
+            margin: 20px auto;
+            display: inline-block;
+        }
         .wheel {
             width: 200px;
             height: 200px;
             border: 5px solid #4CAF50; /* Accent color */
             border-radius: 50%;
-            margin: 20px auto;
             position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             background: linear-gradient(45deg, #2E7D32, #388E3C); /* Dark green gradient */
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); /* Subtle shadow */
             cursor: grab;
@@ -39,12 +40,25 @@
             cursor: grabbing;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
         }
-        .wheel span {
-            font-size: 24px;
-            font-weight: bold;
-            color: white;
-            text-shadow: 1px 1px 2px black;
-            pointer-events: none; /* Prevent pointer events from affecting text */
+        .arrow {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 20px solid #FF0000; /* Red arrow */
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .reference-arrow {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            width: 20px;
+            height: 2px;
+            background-color: #FF0000; /* Red reference arrow */
+            transform: translateX(-50%);
         }
         button {
             padding: 10px 20px;
@@ -64,23 +78,31 @@
 </head>
 <body>
     <h1>Spin the Wheel Counter</h1>
-    <p>Drag and spin the wheel to increase your count!</p>
-    <div class="wheel" id="wheel">
-        <span>Spin Me!</span>
+    <p>Drag and spin the wheel to count when the arrow crosses the reference arrow!</p>
+    <div class="wheel-container">
+        <div class="wheel" id="wheel">
+            <div class="arrow" id="arrow"></div> <!-- Rotating arrow -->
+        </div>
+        <div class="reference-arrow"></div> <!-- Fixed reference arrow -->
     </div>
-    <p>Your count: <span id="counter">0</span></p>
+    <p>Crossings: <span id="counter">0</span></p>
     <button onclick="resetCounter()">Reset</button>
 
     <script>
-        let count = localStorage.getItem('clickCount') ? parseInt(localStorage.getItem('clickCount')) : 0;
+        let count = 0;
         document.getElementById('counter').innerText = count;
 
         const wheel = document.getElementById('wheel');
+        const arrow = document.getElementById('arrow');
+        const referenceArrow = document.querySelector('.reference-arrow');
         let isDragging = false;
         let startAngle = 0;
         let currentAngle = 0;
-        let totalRotation = 0; // Track total degrees rotated
+        let totalRotation = 0;
+        let previousCrossingAngle = 0;
+        let crossingCount = 0;
 
+        // Calculate angle between two points
         function angleFromEvent(event, centerX, centerY) {
             const x = event.clientX - centerX;
             const y = event.clientY - centerY;
@@ -108,19 +130,22 @@
             const angle = angleFromEvent(event, centerX, centerY);
             const delta = angle - (currentAngle + startAngle);
 
-            // Adjust total rotation based on the delta angle
+            // Update the rotation angle
             totalRotation += delta;
             currentAngle += delta;
 
-            // Count full rotations (every 360 degrees)
+            // Check if the arrow crosses the reference arrow
             if (Math.abs(totalRotation) >= 360) {
-                const fullRotations = Math.floor(Math.abs(totalRotation) / 360); // Get the number of full rotations
-                totalRotation -= fullRotations * 360; // Adjust the remaining degrees
+                // Count the crossings based on when it crosses the reference arrow
+                let fullRotations = Math.floor(Math.abs(totalRotation) / 360);
+                totalRotation -= fullRotations * 360; // Adjust remaining rotation
 
-                // Update the counter by the number of full rotations
-                incrementCounter(fullRotations);
+                // Increase the count each time a full 360° rotation happens
+                crossingCount += fullRotations;
+                document.getElementById('counter').innerText = crossingCount;
             }
 
+            // Rotate the wheel
             wheel.style.transform = `rotate(${currentAngle}deg)`;
         }
 
@@ -129,16 +154,9 @@
             isDragging = false;
         }
 
-        function incrementCounter(rotations) {
-            count += rotations; // Increment by the number of full rotations
-            document.getElementById('counter').innerText = count;
-            localStorage.setItem('clickCount', count); // Save to localStorage
-        }
-
         function resetCounter() {
-            count = 0;
-            document.getElementById('counter').innerText = count;
-            localStorage.removeItem('clickCount');
+            crossingCount = 0;
+            document.getElementById('counter').innerText = crossingCount;
         }
 
         // Prevent text selection during dragging
