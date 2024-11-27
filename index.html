@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spin the Wheel Counter</title>
+    <title>Spin the Wheel with Physics</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -26,15 +26,21 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            cursor: pointer;
             background: linear-gradient(45deg, #4CAF50, #8BC34A);
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            cursor: grab;
+            transition: box-shadow 0.3s ease;
+        }
+        .wheel:active {
+            cursor: grabbing;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
         }
         .wheel span {
             font-size: 24px;
             font-weight: bold;
             color: white;
             text-shadow: 1px 1px 2px black;
+            pointer-events: none;
         }
         button {
             padding: 10px 20px;
@@ -46,8 +52,8 @@
 </head>
 <body>
     <h1>Spin the Wheel Counter</h1>
-    <p>Spin the wheel to increase your count!</p>
-    <div class="wheel" id="wheel" onclick="spinWheel()">
+    <p>Drag and spin the wheel to increase your count!</p>
+    <div class="wheel" id="wheel">
         <span>Spin Me!</span>
     </div>
     <p>Your count: <span id="counter">0</span></p>
@@ -55,33 +61,73 @@
 
     <script>
         let count = localStorage.getItem('clickCount') ? parseInt(localStorage.getItem('clickCount')) : 0;
-
-        // Display the saved counter value
         document.getElementById('counter').innerText = count;
 
-        function spinWheel() {
-            const wheel = document.getElementById('wheel');
-            const duration = Math.random() * 2 + 3; // Random spin time between 3 and 5 seconds
-            const spinDegrees = Math.floor(Math.random() * 360) + 720; // At least 2 full spins
+        const wheel = document.getElementById('wheel');
+        let isDragging = false;
+        let startAngle = 0;
+        let currentAngle = 0;
+        let lastDelta = 0;
+        let spinMomentum = 0;
+        let isSpinning = false;
 
-            // Add animation class
-            wheel.style.transition = `transform ${duration}s ease-out`;
-            wheel.style.transform = `rotate(${spinDegrees}deg)`;
+        function angleFromEvent(event, centerX, centerY) {
+            const x = event.clientX - centerX;
+            const y = event.clientY - centerY;
+            return Math.atan2(y, x) * (180 / Math.PI);
+        }
 
-            // Disable further spins during animation
-            wheel.style.pointerEvents = 'none';
+        function startDrag(event) {
+            if (isSpinning) return;
+            const rect = wheel.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
 
-            // Update the counter when the spin ends
-            setTimeout(() => {
-                count++;
-                document.getElementById('counter').innerText = count;
-                localStorage.setItem('clickCount', count);
+            startAngle = angleFromEvent(event, centerX, centerY) - currentAngle;
+            isDragging = true;
+            lastDelta = 0;
+        }
 
-                // Reset styles to allow another spin
-                wheel.style.pointerEvents = 'auto';
-                wheel.style.transition = 'none';
-                wheel.style.transform = 'rotate(0deg)';
-            }, duration * 1000); // Convert seconds to milliseconds
+        function dragWheel(event) {
+            if (!isDragging) return;
+            const rect = wheel.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            const angle = angleFromEvent(event, centerX, centerY);
+            const delta = angle - (currentAngle + startAngle);
+            lastDelta = delta;
+            currentAngle += delta;
+            wheel.style.transform = `rotate(${currentAngle}deg)`;
+        }
+
+        function endDrag() {
+            if (!isDragging) return;
+            isDragging = false;
+
+            // Add spin momentum based on the last drag speed
+            spinMomentum = lastDelta * 10;
+            applyMomentum();
+        }
+
+        function applyMomentum() {
+            if (Math.abs(spinMomentum) > 1) {
+                isSpinning = true;
+                currentAngle += spinMomentum;
+                spinMomentum *= 0.95; // Gradually slow down
+                wheel.style.transform = `rotate(${currentAngle}deg)`;
+
+                requestAnimationFrame(applyMomentum);
+            } else {
+                isSpinning = false;
+                incrementCounter();
+            }
+        }
+
+        function incrementCounter() {
+            count++;
+            document.getElementById('counter').innerText = count;
+            localStorage.setItem('clickCount', count);
         }
 
         function resetCounter() {
@@ -89,6 +135,14 @@
             document.getElementById('counter').innerText = count;
             localStorage.removeItem('clickCount');
         }
+
+        wheel.addEventListener('mousedown', startDrag);
+        window.addEventListener('mousemove', dragWheel);
+        window.addEventListener('mouseup', endDrag);
+
+        wheel.addEventListener('touchstart', (event) => startDrag(event.touches[0]));
+        window.addEventListener('touchmove', (event) => dragWheel(event.touches[0]));
+        window.addEventListener('touchend', endDrag);
     </script>
 </body>
 </html>
