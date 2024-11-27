@@ -150,6 +150,11 @@
         wheel.addEventListener('touchstart', (event) => startDrag(event.touches[0]));
         window.addEventListener('touchmove', (event) => dragWheel(event.touches[0]));
         window.addEventListener('touchend', endDrag);
+
+        // Disable pull-to-refresh on mobile devices
+        window.addEventListener('touchmove', (event) => {
+            event.preventDefault(); // Prevent the page from refreshing when swiping
+        }, { passive: false });
     </script>
 </body>
 </html>
