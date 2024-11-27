@@ -79,8 +79,7 @@
         let isDragging = false;
         let startAngle = 0;
         let currentAngle = 0;
-        let lastDelta = 0;
-        let totalRotation = 0; // Track the total rotation in degrees
+        let totalRotation = 0; // Track total degrees rotated
 
         function angleFromEvent(event, centerX, centerY) {
             const x = event.clientX - centerX;
@@ -97,7 +96,6 @@
 
             startAngle = angleFromEvent(event, centerX, centerY) - currentAngle;
             isDragging = true;
-            lastDelta = 0;
         }
 
         function dragWheel(event) {
@@ -109,14 +107,14 @@
 
             const angle = angleFromEvent(event, centerX, centerY);
             const delta = angle - (currentAngle + startAngle);
-            currentAngle += delta;
 
-            // Track the total rotation
+            // Adjust total rotation based on the delta angle
             totalRotation += delta;
+            currentAngle += delta;
 
             // Count full rotations (every 360 degrees)
             if (Math.abs(totalRotation) >= 360) {
-                const fullRotations = Math.floor(Math.abs(totalRotation) / 360); // How many full rotations
+                const fullRotations = Math.floor(Math.abs(totalRotation) / 360); // Get the number of full rotations
                 totalRotation -= fullRotations * 360; // Adjust the remaining degrees
 
                 // Update the counter by the number of full rotations
