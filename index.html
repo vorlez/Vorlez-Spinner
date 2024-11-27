@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Click Counter</title>
+    <title>Click Counter with Save</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -21,16 +21,30 @@
     </style>
 </head>
 <body>
-    <h1>Simple Click Counter</h1>
+    <h1>Click Counter with Save</h1>
     <p>You have clicked the button <span id="counter">0</span> times.</p>
     <button onclick="incrementCounter()">Click Me!</button>
+    <button onclick="resetCounter()">Reset</button>
 
     <script>
-        let count = 0;
+        // Load the counter value from localStorage, or default to 0
+        let count = localStorage.getItem('clickCount') ? parseInt(localStorage.getItem('clickCount')) : 0;
 
+        // Display the saved counter value
+        document.getElementById('counter').innerText = count;
+
+        // Increment the counter and save the new value
         function incrementCounter() {
             count++;
             document.getElementById('counter').innerText = count;
+            localStorage.setItem('clickCount', count); // Save to localStorage
+        }
+
+        // Reset the counter and clear localStorage
+        function resetCounter() {
+            count = 0;
+            document.getElementById('counter').innerText = count;
+            localStorage.removeItem('clickCount'); // Clear the saved value
         }
     </script>
 </body>
