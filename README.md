@@ -1,1 +1,1 @@
-# The best clicker you will ever see
+# The best game you will ever see
