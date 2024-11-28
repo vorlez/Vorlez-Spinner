@@ -41,6 +41,7 @@
             display: inline-block;
             position: relative;
             text-align: center;
+            pointer-events: all;
         }
         .wheel {
             width: 200px;
@@ -247,8 +248,26 @@
         // Ensure the wheel is always centered when returning to the wheel page
         function centerWheel() {
             const wheelPage = document.getElementById('wheelPage');
-            wheelPage.style.margin = '20px auto'; // Explicitly set margin for centering
-            wheelPage.style.display = 'inline-block'; // Ensure block-level centering
+            wheelPage.style.margin = '20px auto';
+            wheelPage.style.display = 'inline-block';
+        }
+
+        // Get the mouse angle relative to the center of the wheel
+        function getAngle(event) {
+            const rect = wheel.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const dx = event.clientX - centerX;
+            const dy = event.clientY - centerY;
+            return Math.atan2(dy, dx) * (180 / Math.PI);
+        }
+
+        // Normalize the angle between 0 and 360 degrees
+        function normalizeAngle(angle) {
+            if (angle < 0) {
+                angle += 360;
+            }
+            return angle % 360;
         }
 
         // Start dragging
