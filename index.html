@@ -174,6 +174,9 @@
         let lastAngle = 0; // The last recorded angle
         let totalRotation = 0; // Cumulative rotation
         let isDragging = false; // Whether the wheel is being dragged
+        let cps = localStorage.getItem('coinsPerSecond') ? parseInt(localStorage.getItem('coinsPerSecond')) : 0;
+        let cpsUpgradeCost = localStorage.getItem('cpsUpgradeCost') ? parseInt(localStorage.getItem('cpsUpgradeCost')) : 50;
+
 
         const wheel = document.getElementById('wheel');
         const counterDisplay = document.getElementById('counter');
@@ -181,6 +184,23 @@
         const coinsPerSpinDisplay = document.getElementById('coinsPerSpin');
         const deleteButton = document.getElementById('deleteButton'); // Reference delete button
         const saveButton = document.getElementById('saveButton'); // Reference save button
+        const cpsDisplay = document.getElementById('coinsPerSecond');
+        const cpsUpgradeButton = document.getElementById('cpsUpgradeButton');
+
+        // Initialize CPS timer
+setInterval(() => {
+    if (cps > 0) {
+        count += cps;
+        localStorage.setItem('coinCount', count);
+        counterDisplay.innerText = count;
+
+        // Enable or disable buttons based on updated count
+        upgradeButton.disabled = count < upgradeCost;
+        cpsUpgradeButton.disabled = count < cpsUpgradeCost;
+    }
+}, 1000); // Add coins every second
+
+
 
         // Confirmation levels for delete
         const confirmationLevels = [
@@ -334,18 +354,44 @@
                 upgradeButton.disabled = count < upgradeCost;
             }
         }
+        
+        // Handle CPS upgrade button click
+function buyCpsUpgrade() {
+    if (count >= cpsUpgradeCost) {
+        count -= cpsUpgradeCost;
+        cps += 1; // Increment CPS level by 1
+        cpsUpgradeCost = Math.ceil(cpsUpgradeCost * 2.5); // Increase CPS upgrade cost
+
+        // Save progress
+        localStorage.setItem('coinCount', count);
+        localStorage.setItem('coinsPerSecond', cps);
+        localStorage.setItem('cpsUpgradeCost', cpsUpgradeCost);
+
+        // Update displays
+        counterDisplay.innerText = count;
+        cpsDisplay.innerText = cps;
+        cpsUpgradeButton.innerText = `Upgrade CPS (${cpsUpgradeCost} coins)`;
+        cpsUpgradeButton.disabled = count < cpsUpgradeCost;
+    }
+}
 
         // Event listeners
         wheel.addEventListener('mousedown', startDrag);
         document.addEventListener('mousemove', dragWheel);
         document.addEventListener('mouseup', endDrag);
         upgradeButton.addEventListener('click', buyUpgrade);
+        cpsUpgradeButton.addEventListener('click', buyCpsUpgrade);
+
 
         // Initialize displays
         counterDisplay.innerText = count;
         coinsPerSpinDisplay.innerText = multiplier;
         upgradeButton.innerText = `Upgrade (${upgradeCost} coins)`;
         upgradeButton.disabled = count < upgradeCost;
+        cpsDisplay.innerText = cps;
+cpsUpgradeButton.innerText = `Upgrade CPS (${cpsUpgradeCost} coins)`;
+cpsUpgradeButton.disabled = count < cpsUpgradeCost;
+
 
     </script>
 </body>
