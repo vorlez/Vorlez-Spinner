@@ -7,10 +7,14 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 50px;
+            margin: 0;
+            height: 100vh; /* Full viewport height */
+            display: flex; /* Flexbox for centering */
+            justify-content: center;
+            align-items: center;
             background-color: #121212;
             color: #ffffff;
+            flex-direction: column; /* For vertical stacking */
         }
         h1 {
             color: #FFD700;
@@ -37,18 +41,16 @@
             background-color: #ffbf00;
         }
         .wheel-container {
-            margin: 20px auto;
-            display: inline-block;
-            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-align: center;
-            pointer-events: all;
         }
         .wheel {
             width: 200px;
             height: 200px;
             border: 5px solid #FFD700;
             border-radius: 50%;
-            position: relative;
             background: radial-gradient(circle, #2E7D32, #1B5E20);
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
             cursor: grab;
@@ -59,30 +61,29 @@
             font-size: 24px;
             font-weight: bold;
             user-select: none;
+            margin-bottom: 20px;
         }
         .wheel:active {
             cursor: grabbing;
         }
         .arrow {
-            position: absolute;
+            position: relative;
             top: -25px;
-            left: 50%;
-            transform: translateX(-50%);
             width: 0;
             height: 0;
             border-left: 20px solid transparent;
             border-right: 20px solid transparent;
             border-bottom: 40px solid #FFD700;
         }
-        .counter, .upgrade, .coins-per-spin {
-            font-size: 28px;
+        .counter, .upgrade, .coins-per-spin, .coins-per-second {
+            font-size: 20px;
             font-weight: bold;
             color: #FFD700;
         }
         .upgrade-button {
-            margin-top: 20px;
+            margin: 10px 0;
             padding: 10px 20px;
-            font-size: 18px;
+            font-size: 16px;
             background-color: #FFD700;
             color: #121212;
             border: none;
@@ -95,43 +96,34 @@
             cursor: not-allowed;
         }
         .options-container {
-            margin-top: 50px;
+            margin-top: 20px;
+            display: none;
         }
         .save-button {
             background-color: green;
             color: white;
-            padding: 15px 30px;
-            font-size: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
             cursor: pointer;
             border: none;
             border-radius: 5px;
-            width: 200px;
         }
         .save-button:hover {
             background-color: #28a745;
         }
         .delete-button {
-            margin-top: 20px;
+            margin-top: 10px;
             padding: 10px 20px;
-            font-size: 18px;
+            font-size: 16px;
             background-color: #ff4c4c;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
         }
         .delete-button:hover {
             background-color: #ff1a1a;
-        }
-        .coins-section, .upgrade-section {
-            display: block;
-        }
-        .options-section {
-            display: none;
         }
     </style>
 </head>
@@ -145,202 +137,65 @@
     <!-- Wheel container -->
     <div class="wheel-container" id="wheelPage">
         <div class="arrow"></div>
-        <div class="wheel" id="wheel">Spin to get coins!</div>
-        
-        <!-- Coins and upgrade sections -->
-<div class="coins-section">
-    <p>Coins: <span class="counter" id="counter">0</span></p>
-    <p>Coins per Spin: <span class="coins-per-spin" id="coinsPerSpin">1</span></p>
-    <p>Coins per Second: <span class="coins-per-second" id="coinsPerSecond">0</span></p>
-    <button id="upgradeButton" class="upgrade-button" disabled>Upgrade Spin (20 coins)</button>
-    <button id="cpsUpgradeButton" class="upgrade-button" disabled>Upgrade CPS (50 coins)</button>
-</div>
-        
+        <div class="wheel" id="wheel">Spin Me!</div>
+        <p>Coins: <span class="counter" id="counter">0</span></p>
+        <p>Coins per Spin: <span class="coins-per-spin" id="coinsPerSpin">1</span></p>
+        <p>Coins per Second: <span class="coins-per-second" id="coinsPerSecond">0</span></p>
+        <button id="upgradeButton" class="upgrade-button" disabled>Upgrade Spin (20 coins)</button>
+        <button id="cpsUpgradeButton" class="upgrade-button" disabled>Upgrade CPS (50 coins)</button>
     </div>
 
-    
-
     <!-- Options container -->
-    <div class="options-container" id="optionsPage" style="display: none;">
+    <div class="options-container" id="optionsPage">
         <button class="save-button" id="saveButton">Save to File</button>
         <button class="delete-button" id="deleteButton">Delete All Progress</button>
     </div>
 
     <script>
-        let count = localStorage.getItem('coinCount') ? parseInt(localStorage.getItem('coinCount')) : 0; // Load saved coin count
-        let multiplier = localStorage.getItem('coinMultiplier') ? parseInt(localStorage.getItem('coinMultiplier')) : 1; // Load saved multiplier
-        let upgradeCost = localStorage.getItem('upgradeCost') ? parseInt(localStorage.getItem('upgradeCost')) : 20; // Load saved upgrade cost
-        let currentAngle = 0; // The current angle of the wheel
-        let lastAngle = 0; // The last recorded angle
-        let totalRotation = 0; // Cumulative rotation
-        let isDragging = false; // Whether the wheel is being dragged
-        let cps = localStorage.getItem('coinsPerSecond') ? parseInt(localStorage.getItem('coinsPerSecond')) : 0;
-        let cpsUpgradeCost = localStorage.getItem('cpsUpgradeCost') ? parseInt(localStorage.getItem('cpsUpgradeCost')) : 50;
+        // State variables
+        let count = parseInt(localStorage.getItem('coinCount')) || 0;
+        let multiplier = parseInt(localStorage.getItem('coinMultiplier')) || 1;
+        let upgradeCost = parseInt(localStorage.getItem('upgradeCost')) || 20;
+        let cps = parseInt(localStorage.getItem('coinsPerSecond')) || 0;
+        let cpsUpgradeCost = parseInt(localStorage.getItem('cpsUpgradeCost')) || 50;
 
-
+        // DOM elements
         const wheel = document.getElementById('wheel');
         const counterDisplay = document.getElementById('counter');
-        const upgradeButton = document.getElementById('upgradeButton');
         const coinsPerSpinDisplay = document.getElementById('coinsPerSpin');
-        const deleteButton = document.getElementById('deleteButton'); // Reference delete button
-        const saveButton = document.getElementById('saveButton'); // Reference save button
         const cpsDisplay = document.getElementById('coinsPerSecond');
+        const upgradeButton = document.getElementById('upgradeButton');
         const cpsUpgradeButton = document.getElementById('cpsUpgradeButton');
+        const saveButton = document.getElementById('saveButton');
+        const deleteButton = document.getElementById('deleteButton');
 
-        // Initialize CPS timer
-setInterval(() => {
-    if (cps > 0) {
-        count += cps;
-        localStorage.setItem('coinCount', count);
-        counterDisplay.innerText = count;
-
-        // Enable or disable buttons based on updated count
-        upgradeButton.disabled = count < upgradeCost;
-        cpsUpgradeButton.disabled = count < cpsUpgradeCost;
-    }
-}, 1000); // Add coins every second
-
-
-
-        // Confirmation levels for delete
-        const confirmationLevels = [
-            "Are you sure you want to delete all progress? This action cannot be undone.",
-            "All progress will be lost forever. Proceed?",
-            "Final warning: Click OK to erase everything."
-        ];
-
-        // Handle delete button click
-        deleteButton.addEventListener('click', () => {
-            function askConfirmation(level) {
-                if (level >= confirmationLevels.length) {
-                    // Final level reached, perform the reset
-                    localStorage.clear(); // Clear localStorage
-                    count = 0;
-                    multiplier = 1;
-                    upgradeCost = 20;
-                    currentAngle = 0; // Reset wheel angle
-                    totalRotation = 0; // Reset rotation state
-
-                    // Reset displays
-                    counterDisplay.innerText = count;
-                    coinsPerSpinDisplay.innerText = multiplier;
-                    upgradeButton.innerText = `Upgrade (${upgradeCost} coins)`;
-                    upgradeButton.disabled = true;
-                    wheel.style.transform = `rotate(${currentAngle}deg)`; // Reset wheel's visual rotation
-
-                    alert("All progress has been deleted.");
-                    return;
-                }
-
-                // Show the confirmation message for the current level
-                const confirmed = confirm(confirmationLevels[level]);
-                if (confirmed) {
-                    askConfirmation(level + 1); // Proceed to the next confirmation
-                }
-            }
-
-            askConfirmation(0); // Start with the first confirmation message
-        });
-
-        // Handle save button click
-        saveButton.addEventListener('click', () => {
-            const progressData = {
-                count: count,
-                multiplier: multiplier,
-                upgradeCost: upgradeCost
-            };
-            const fileName = "wheel_progress.json";
-            const fileBlob = new Blob([JSON.stringify(progressData)], { type: "application/json" });
-            const fileUrl = URL.createObjectURL(fileBlob);
-            const link = document.createElement('a');
-            link.href = fileUrl;
-            link.download = fileName;
-            link.click();
-        });
-
-        // Navigation functions
-        function goToWheel() {
-            document.getElementById('wheelPage').style.display = 'block';
-            document.getElementById('optionsPage').style.display = 'none';
-            centerWheel(); // Ensure wheel is centered when returning to it
-        }
-
-        function goToOptions() {
-            document.getElementById('wheelPage').style.display = 'none';
-            document.getElementById('optionsPage').style.display = 'block';
-        }
-
-        // Ensure the wheel is always centered when returning to the wheel page
-        function centerWheel() {
-            const wheelPage = document.getElementById('wheelPage');
-            wheelPage.style.margin = '20px auto';
-            wheelPage.style.display = 'inline-block';
-        }
-
-        // Get the mouse angle relative to the center of the wheel
-        function getAngle(event) {
-            const rect = wheel.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-            const dx = event.clientX - centerX;
-            const dy = event.clientY - centerY;
-            return Math.atan2(dy, dx) * (180 / Math.PI);
-        }
-
-        // Normalize the angle between 0 and 360 degrees
-        function normalizeAngle(angle) {
-            if (angle < 0) {
-                angle += 360;
-            }
-            return angle % 360;
-        }
-
-        // Start dragging
-        function startDrag(event) {
-            isDragging = true;
-            lastAngle = normalizeAngle(getAngle(event));
-            wheel.style.transition = 'none'; // Disable smooth transition during drag
-        }
-
-        // Drag wheel
-        function dragWheel(event) {
-            if (!isDragging) return;
-
-            const currentAngleNow = normalizeAngle(getAngle(event));
-            const deltaAngle = currentAngleNow - lastAngle;
-
-            // Handle angle wrap-around from 0 to 360
-            if (deltaAngle > 180) {
-                totalRotation -= 360 - deltaAngle;
-            } else if (deltaAngle < -180) {
-                totalRotation += 360 + deltaAngle;
-            } else {
-                totalRotation += deltaAngle;
-            }
-
-            // Check if a full rotation is completed
-            if (Math.abs(totalRotation) >= 360) {
-                count += multiplier;
-                totalRotation = 0;
+        // Coin generation per second
+        setInterval(() => {
+            if (cps > 0) {
+                count += cps;
                 localStorage.setItem('coinCount', count);
+                updateDisplays();
             }
+        }, 1000);
 
-            // Update wheel rotation
-            currentAngle = (currentAngle + deltaAngle) % 360;
-            wheel.style.transform = `rotate(${currentAngle}deg)`;
-            lastAngle = currentAngleNow;
+        // Update displays
+        function updateDisplays() {
             counterDisplay.innerText = count;
-
+            coinsPerSpinDisplay.innerText = multiplier;
+            cpsDisplay.innerText = cps;
             upgradeButton.disabled = count < upgradeCost;
+            cpsUpgradeButton.disabled = count < cpsUpgradeCost;
         }
 
-        // End dragging
-        function endDrag() {
-            isDragging = false;
-        }
+        // Spin logic
+        wheel.addEventListener('click', () => {
+            count += multiplier;
+            localStorage.setItem('coinCount', count);
+            updateDisplays();
+        });
 
-        // Handle upgrade button click
-        function buyUpgrade() {
+        // Upgrade logic
+        upgradeButton.addEventListener('click', () => {
             if (count >= upgradeCost) {
                 count -= upgradeCost;
                 multiplier *= 2;
@@ -348,51 +203,59 @@ setInterval(() => {
                 localStorage.setItem('coinCount', count);
                 localStorage.setItem('coinMultiplier', multiplier);
                 localStorage.setItem('upgradeCost', upgradeCost);
-                counterDisplay.innerText = count;
-                coinsPerSpinDisplay.innerText = multiplier;
-                upgradeButton.innerText = `Upgrade (${upgradeCost} coins)`;
-                upgradeButton.disabled = count < upgradeCost;
+                updateDisplays();
             }
-        }
-        
-        // Handle CPS upgrade button click
-function buyCpsUpgrade() {
-    if (count >= cpsUpgradeCost) {
-        count -= cpsUpgradeCost;
-        cps += 1; // Increment CPS level by 1
-        cpsUpgradeCost = Math.ceil(cpsUpgradeCost * 2.5); // Increase CPS upgrade cost
+        });
+
+        // CPS Upgrade logic
+        cpsUpgradeButton.addEventListener('click', () => {
+            if (count >= cpsUpgradeCost) {
+                count -= cpsUpgradeCost;
+                cps += 1;
+                cpsUpgradeCost = Math.ceil(cpsUpgradeCost * 2.5);
+                localStorage.setItem('coinCount', count);
+                localStorage.setItem('coinsPerSecond', cps);
+                localStorage.setItem('cpsUpgradeCost', cpsUpgradeCost);
+                updateDisplays();
+            }
+        });
 
         // Save progress
-        localStorage.setItem('coinCount', count);
-        localStorage.setItem('coinsPerSecond', cps);
-        localStorage.setItem('cpsUpgradeCost', cpsUpgradeCost);
+        saveButton.addEventListener('click', () => {
+            const data = { count, multiplier, upgradeCost, cps, cpsUpgradeCost };
+            const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'progress.json';
+            link.click();
+        });
 
-        // Update displays
-        counterDisplay.innerText = count;
-        cpsDisplay.innerText = cps;
-        cpsUpgradeButton.innerText = `Upgrade CPS (${cpsUpgradeCost} coins)`;
-        cpsUpgradeButton.disabled = count < cpsUpgradeCost;
-    }
-}
+        // Delete progress
+        deleteButton.addEventListener('click', () => {
+            if (confirm("Are you sure you want to delete all progress?")) {
+                localStorage.clear();
+                count = 0;
+                multiplier = 1;
+                upgradeCost = 20;
+                cps = 0;
+                cpsUpgradeCost = 50;
+                updateDisplays();
+            }
+        });
 
-        // Event listeners
-        wheel.addEventListener('mousedown', startDrag);
-        document.addEventListener('mousemove', dragWheel);
-        document.addEventListener('mouseup', endDrag);
-        upgradeButton.addEventListener('click', buyUpgrade);
-        cpsUpgradeButton.addEventListener('click', buyCpsUpgrade);
+        // Navigation
+        function goToWheel() {
+            document.getElementById('wheelPage').style.display = 'flex';
+            document.getElementById('optionsPage').style.display = 'none';
+        }
 
+        function goToOptions() {
+            document.getElementById('wheelPage').style.display = 'none';
+            document.getElementById('optionsPage').style.display = 'block';
+        }
 
         // Initialize displays
-        counterDisplay.innerText = count;
-        coinsPerSpinDisplay.innerText = multiplier;
-        upgradeButton.innerText = `Upgrade (${upgradeCost} coins)`;
-        upgradeButton.disabled = count < upgradeCost;
-        cpsDisplay.innerText = cps;
-cpsUpgradeButton.innerText = `Upgrade CPS (${cpsUpgradeCost} coins)`;
-cpsUpgradeButton.disabled = count < cpsUpgradeCost;
-
-
+        updateDisplays();
     </script>
 </body>
 </html>
