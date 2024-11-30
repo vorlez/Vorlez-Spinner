@@ -459,8 +459,8 @@
         function buyCpsUpgrade() {
             if (count >= cpsUpgradeCost) {
                 count -= cpsUpgradeCost;
-                cps += 1; // Increase coins per second by 1
-                cpsUpgradeCost = Math.ceil(cpsUpgradeCost * 2); // Increase cost for next upgrade
+                cps = 1 + cps * 2; // Increase coins per second by 1
+                cpsUpgradeCost = Math.ceil(cpsUpgradeCost * 2.5); // Increase cost for next upgrade
 
                 // Save to localStorage
                 localStorage.setItem('coinCount', count);
