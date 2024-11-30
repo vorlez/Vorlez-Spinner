@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,9 +13,11 @@
             background-color: #121212;
             color: #ffffff;
         }
+
         h1 {
             color: #FFD700;
         }
+
         .menu {
             position: absolute;
             top: 20px;
@@ -23,6 +26,7 @@
             padding: 10px;
             border-radius: 5px;
         }
+
         .menu button {
             background-color: #FFD700;
             border: none;
@@ -33,22 +37,25 @@
             margin-bottom: 10px;
             width: 150px;
         }
+
         .menu button:hover {
             background-color: #ffbf00;
         }
+
         .wheel-container {
-            margin: 20px auto;
-            display: inline-block;
-            position: relative;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             text-align: center;
             pointer-events: all;
         }
+
         .wheel {
             width: 200px;
             height: 200px;
             border: 5px solid #FFD700;
             border-radius: 50%;
-            position: relative;
             background: radial-gradient(circle, #2E7D32, #1B5E20);
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
             cursor: grab;
@@ -59,10 +66,13 @@
             font-size: 24px;
             font-weight: bold;
             user-select: none;
+            position: relative;
         }
+
         .wheel:active {
             cursor: grabbing;
         }
+
         .arrow {
             position: absolute;
             top: -25px;
@@ -74,14 +84,34 @@
             border-right: 20px solid transparent;
             border-bottom: 40px solid #FFD700;
         }
-        .counter, .upgrade, .coins-per-spin {
+
+        .counter,
+        .upgrade,
+        .coins-per-spin {
             font-size: 28px;
             font-weight: bold;
             color: #FFD700;
         }
+
+
+        /* Position the upgrade container on the right */
+        .upgrade-container {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            /* Aligns the container to the right side */
+            transform: translateY(-50%);
+            /* Vertically center the container */
+            display: block;
+        }
+
+        /* Style for the upgrade buttons */
+        .coins-section {
+            margin-bottom: 10px;
+            /* Space out the buttons */
+        }
+
         .upgrade-button {
-            margin-top: 20px;
-            padding: 10px 20px;
             font-size: 18px;
             background-color: #FFD700;
             color: #121212;
@@ -89,15 +119,28 @@
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
+            width: 200px;
+            padding: 10px;
         }
+
+        .upgrade-button:hover {
+            background-color: #ffbf00;
+        }
+
+
+
+
         .upgrade-button:disabled {
             background-color: #555;
             cursor: not-allowed;
         }
+
         .options-container {
             margin-top: 50px;
         }
-        .save-button, .load-button {
+
+        .save-button,
+        .load-button {
             background-color: green;
             color: white;
             padding: 15px 30px;
@@ -107,9 +150,12 @@
             border-radius: 5px;
             width: 200px;
         }
-        .save-button:hover, .load-button:hover {
+
+        .save-button:hover,
+        .load-button:hover {
             background-color: #28a745;
         }
+
         .delete-button {
             margin-top: 20px;
             padding: 10px 20px;
@@ -124,17 +170,36 @@
             bottom: 20px;
             right: 20px;
         }
+
         .delete-button:hover {
             background-color: #ff1a1a;
         }
-        .coins-section, .upgrade-section {
+
+        .coins-section,
+        .upgrade-section {
             display: block;
         }
+
         .options-section {
             display: none;
         }
+
+        /* New styling for upgrades to be on the right */
+        .upgrade-section {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            /* Center vertically */
+        }
+
+        .upgrade-button {
+            margin-bottom: 10px;
+            /* Space out the buttons */
+        }
     </style>
 </head>
+
 <body>
     <!-- Menu -->
     <div class="menu">
@@ -146,12 +211,20 @@
     <div class="wheel-container" id="wheelPage">
         <div class="arrow"></div>
         <div class="wheel" id="wheel">Spin to get coins!</div>
-        
-        <!-- Coins and upgrade sections -->
+
+        <p>Coins: <span class="counter" id="counter">0</span></p>
+        <p>Coins per Spin: <span class="coins-per-spin" id="coinsPerSpin">1</span></p>
+        <p>Coins per Second: <span class="coins-per-second" id="coinsPerSecond">0</span></p>
+    </div>
+
+    <!-- Upgrade container on the right side -->
+    <div class="upgrade-container" id="upgradeContainer">
         <div class="coins-section">
-            <p>Coins: <span class="counter" id="counter">0</span></p>
-            <p>Coins per Spin: <span class="coins-per-spin" id="coinsPerSpin">1</span></p>
             <button id="upgradeButton" class="upgrade-button" disabled>Upgrade (20 coins)</button>
+        </div>
+
+        <div class="coins-section">
+            <button id="coinsPerSecondUpgradeButton" class="upgrade-button">CPS Upgrade (50 coins)</button>
         </div>
     </div>
 
@@ -161,6 +234,7 @@
         <button class="load-button" id="loadButton">Load from File</button>
         <button class="delete-button" id="deleteButton">Delete All Progress</button>
     </div>
+
 
     <script>
         let count = localStorage.getItem('coinCount') ? parseInt(localStorage.getItem('coinCount')) : 0; // Load saved coin count
@@ -274,13 +348,15 @@
         function goToWheel() {
             document.getElementById('wheelPage').style.display = 'block';
             document.getElementById('optionsPage').style.display = 'none';
-            centerWheel(); // Ensure wheel is centered when returning to it
+            document.getElementById('upgradeContainer').style.display = 'block'; // Show upgrade container when in the Wheel page
         }
 
         function goToOptions() {
             document.getElementById('wheelPage').style.display = 'none';
             document.getElementById('optionsPage').style.display = 'block';
+            document.getElementById('upgradeContainer').style.display = 'none'; // Hide upgrade container when in the Options page
         }
+
 
         // Ensure the wheel is always centered when returning to the wheel page
         function centerWheel() {
@@ -367,6 +443,57 @@
             }
         }
 
+
+        // Variables for Coins per Second
+        let cps = localStorage.getItem('coinsPerSecond') ? parseInt(localStorage.getItem('coinsPerSecond')) : 0;
+        let cpsUpgradeCost = localStorage.getItem('cpsUpgradeCost') ? parseInt(localStorage.getItem('cpsUpgradeCost')) : 50;
+
+        const coinsPerSecondDisplay = document.getElementById('coinsPerSecond');
+        const cpsUpgradeButton = document.getElementById('coinsPerSecondUpgradeButton');
+
+        // Update Coins per Second display
+        coinsPerSecondDisplay.innerText = cps;
+        cpsUpgradeButton.innerText = `CPS Upgrade (${cpsUpgradeCost} coins)`;
+
+        // Function to buy CPS upgrade
+        function buyCpsUpgrade() {
+            if (count >= cpsUpgradeCost) {
+                count -= cpsUpgradeCost;
+                cps += 1; // Increase coins per second by 1
+                cpsUpgradeCost = Math.ceil(cpsUpgradeCost * 2); // Increase cost for next upgrade
+
+                // Save to localStorage
+                localStorage.setItem('coinCount', count);
+                localStorage.setItem('coinsPerSecond', cps);
+                localStorage.setItem('cpsUpgradeCost', cpsUpgradeCost);
+
+                // Update UI
+                counterDisplay.innerText = count;
+                coinsPerSecondDisplay.innerText = cps;
+                cpsUpgradeButton.innerText = `CPS Upgrade (${cpsUpgradeCost} coins)`;
+                cpsUpgradeButton.disabled = count < cpsUpgradeCost;
+            }
+        }
+
+        // Generate coins per second
+        setInterval(() => {
+            count += cps;
+            localStorage.setItem('coinCount', count);
+            counterDisplay.innerText = count;
+
+            // Enable/disable buttons based on count
+            upgradeButton.disabled = count < upgradeCost;
+            cpsUpgradeButton.disabled = count < cpsUpgradeCost;
+        }, 1000); // Trigger every second
+
+        // Add event listener for CPS upgrade button
+        cpsUpgradeButton.addEventListener('click', buyCpsUpgrade);
+
+        // Initialize CPS upgrade button state
+        cpsUpgradeButton.disabled = count < cpsUpgradeCost;
+
+
+
         // Event listeners
         wheel.addEventListener('mousedown', startDrag);
         document.addEventListener('mousemove', dragWheel);
@@ -380,4 +507,5 @@
         upgradeButton.disabled = count < upgradeCost;
     </script>
 </body>
+
 </html>
