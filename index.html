@@ -51,23 +51,25 @@
             pointer-events: all;
         }
 
-        .wheel {
-            width: 200px;
-            height: 200px;
-            border: 5px solid #FFD700;
-            border-radius: 50%;
-            background: radial-gradient(circle, #2E7D32, #1B5E20);
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-            cursor: grab;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-            user-select: none;
-            position: relative;
-        }
+.wheel {
+    width: 200px;
+    height: 200px;
+    border: 5px solid #FFD700;
+    border-radius: 50%;
+    background: url('Color_circle_(RGB).png') no-repeat center center;
+    background-size: cover;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    cursor: grab;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    user-select: none;
+    position: relative;
+}
+
 
         .wheel:active {
             cursor: grabbing;
