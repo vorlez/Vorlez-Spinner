@@ -6,18 +6,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wheel Spinner</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 50px;
-            background-color: #121212;
-            color: #ffffff;
-        }
+       body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    background-color: #333333; /* Dark grey background */
+    color: #ffffff; /* White text for contrast */
+}
 
         h1 {
             color: #FFD700;
         }
 
+            .topText {
+    position: absolute;
+    top: 20px;
+    width: 100%;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #FFD700; /* Gold color for text */
+    margin: 0;
+}
         .menu {
             position: absolute;
             top: 20px;
@@ -207,7 +217,9 @@
         <button onclick="goToWheel()">Go to Wheel</button>
         <button onclick="goToOptions()">Options</button>
     </div>
-
+    
+    <div id="topText">Spin to get coins!</div>
+    
     <!-- Wheel container -->
     <div class="wheel-container" id="wheelPage">
         <!-- <div class="arrow"></div> -->
