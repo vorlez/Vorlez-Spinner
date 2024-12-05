@@ -10,11 +10,13 @@
             font-family: Arial, sans-serif;
             text-align: center;
             margin: 0;
-            background-color: #333333;
-            /* Dark grey background */
+            background-color: #222222;
+            /* Slightly darker grey */
             color: #ffffff;
             /* White text for contrast */
+            transition: background-color 0.5s ease;
         }
+
 
         h1 {
             color: #FFD700;
@@ -365,18 +367,27 @@
             });
         });
 
-        // Navigation functions
-        function goToWheel() {
-            document.getElementById('wheelPage').style.display = 'block';
-            document.getElementById('optionsPage').style.display = 'none';
-            document.getElementById('upgradeContainer').style.display = 'block'; // Show upgrade container when in the Wheel page
-        }
+// Function to set the background color
+function setBackgroundColor(color) {
+    document.body.style.backgroundColor = color;
+}
 
-        function goToOptions() {
-            document.getElementById('wheelPage').style.display = 'none';
-            document.getElementById('optionsPage').style.display = 'block';
-            document.getElementById('upgradeContainer').style.display = 'none'; // Hide upgrade container when in the Options page
-        }
+// Modify goToWheel and goToOptions to include the background color change
+function goToWheel() {
+    document.getElementById('wheelPage').style.display = 'block';
+    document.getElementById('optionsPage').style.display = 'none';
+    document.getElementById('upgradeContainer').style.display = 'block'; // Show upgrade container when in the Wheel page
+    document.getElementById('topText').style.display = 'block'; // Show top text
+    setBackgroundColor('#222222'); // Darker color for the wheel page
+}
+
+function goToOptions() {
+    document.getElementById('wheelPage').style.display = 'none';
+    document.getElementById('optionsPage').style.display = 'block';
+    document.getElementById('upgradeContainer').style.display = 'none'; // Hide upgrade container when in the Options page
+    document.getElementById('topText').style.display = 'none'; // Hide top text
+    setBackgroundColor('#3E1111'); // Lighter color for the options page
+}
 
 
         // Ensure the wheel is always centered when returning to the wheel page
