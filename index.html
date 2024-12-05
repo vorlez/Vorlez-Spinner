@@ -6,28 +6,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wheel Spinner</title>
     <style>
-       body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    margin: 0;
-    background-color: #333333; /* Dark grey background */
-    color: #ffffff; /* White text for contrast */
-}
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            background-color: #333333;
+            /* Dark grey background */
+            color: #ffffff;
+            /* White text for contrast */
+        }
 
         h1 {
             color: #FFD700;
         }
 
-            .topText {
-    position: absolute;
-    top: 20px;
-    width: 100%;
-    text-align: center;
-    font-size: 24px;
-    font-weight: bold;
-    color: #FFD700; /* Gold color for text */
-    margin: 0;
-}
+        .topText {
+            position: absolute;
+            top: 20px;
+            width: 100%;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #FFD700;
+            /* Gold color for text */
+            margin: 0;
+        }
+
         .menu {
             position: absolute;
             top: 20px;
@@ -61,23 +65,23 @@
             pointer-events: all;
         }
 
-.wheel {
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    background: url('pngwing.com.png') no-repeat center center;
-    background-size: cover;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-    cursor: grab;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    font-size: 24px;
-    font-weight: bold;
-    user-select: none;
-    position: relative;
-}
+        .wheel {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: url('pngwing.com.png') no-repeat center center;
+            background-size: cover;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            cursor: grab;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            user-select: none;
+            position: relative;
+        }
 
 
         .wheel:active {
@@ -217,13 +221,13 @@
         <button onclick="goToWheel()">Go to Wheel</button>
         <button onclick="goToOptions()">Options</button>
     </div>
-    
+
     <div id="topText">Spin to get coins!</div>
-    
+
     <!-- Wheel container -->
     <div class="wheel-container" id="wheelPage">
         <!-- <div class="arrow"></div> -->
-        <div class="wheel" id="wheel">Spin to get coins!</div>
+        <div class="wheel" id="wheel"></div>
 
         <p>Coins: <span class="counter" id="counter">0</span></p>
         <p>Coins per Spin: <span class="coins-per-spin" id="coinsPerSpin">1</span></p>
