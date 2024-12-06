@@ -15,6 +15,7 @@
             color: #ffffff;
             /* White text for contrast */
             transition: background-color 0.5s ease;
+            overflow: hidden;
         }
 
 
@@ -218,6 +219,10 @@
             margin-bottom: 10px;
             /* Space out the buttons */
         }
+
+        .canvas {
+            display: block;
+        }
     </style>
 </head>
 
@@ -228,11 +233,13 @@
         <button onclick="goToOptions()">Options</button>
     </div>
 
+
     <div class="topText" id="topText">Spin to get coins!</div>
 
     <!-- Wheel container -->
     <div class="wheel-container" id="wheelPage">
         <!-- <div class="arrow"></div> -->
+
         <div class="wheel" id="wheel">Spin Me!!</div>
 
         <p>Coins: <span class="counter" id="counter">0</span></p>
@@ -257,6 +264,8 @@
         <button class="load-button" id="loadButton">Load from File</button>
         <button class="delete-button" id="deleteButton">Delete All Progress</button>
     </div>
+
+    <canvas id="particleCanvas" class="canvas"></canvas>
 
 
     <script>
@@ -367,27 +376,27 @@
             });
         });
 
-// Function to set the background color
-function setBackgroundColor(color) {
-    document.body.style.backgroundColor = color;
-}
+        // Function to set the background color
+        function setBackgroundColor(color) {
+            document.body.style.backgroundColor = color;
+        }
 
-// Modify goToWheel and goToOptions to include the background color change
-function goToWheel() {
-    document.getElementById('wheelPage').style.display = 'block';
-    document.getElementById('optionsPage').style.display = 'none';
-    document.getElementById('upgradeContainer').style.display = 'block'; // Show upgrade container when in the Wheel page
-    document.getElementById('topText').style.display = 'block'; // Show top text
-    setBackgroundColor('#222222'); // Darker color for the wheel page
-}
+        // Modify goToWheel and goToOptions to include the background color change
+        function goToWheel() {
+            document.getElementById('wheelPage').style.display = 'block';
+            document.getElementById('optionsPage').style.display = 'none';
+            document.getElementById('upgradeContainer').style.display = 'block'; // Show upgrade container when in the Wheel page
+            document.getElementById('topText').style.display = 'block'; // Show top text
+            setBackgroundColor('#222222'); // Darker color for the wheel page
+        }
 
-function goToOptions() {
-    document.getElementById('wheelPage').style.display = 'none';
-    document.getElementById('optionsPage').style.display = 'block';
-    document.getElementById('upgradeContainer').style.display = 'none'; // Hide upgrade container when in the Options page
-    document.getElementById('topText').style.display = 'none'; // Hide top text
-    setBackgroundColor('#3E1111'); // Lighter color for the options page
-}
+        function goToOptions() {
+            document.getElementById('wheelPage').style.display = 'none';
+            document.getElementById('optionsPage').style.display = 'block';
+            document.getElementById('upgradeContainer').style.display = 'none'; // Hide upgrade container when in the Options page
+            document.getElementById('topText').style.display = 'none'; // Hide top text
+            setBackgroundColor('#3E1111'); // Lighter color for the options page
+        }
 
 
         // Ensure the wheel is always centered when returning to the wheel page
@@ -537,6 +546,115 @@ function goToOptions() {
         coinsPerSpinDisplay.innerText = multiplier;
         upgradeButton.innerText = `Upgrade (${upgradeCost} coins)`;
         upgradeButton.disabled = count < upgradeCost;
+
+
+
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Resize canvas
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Particle class
+        class Particle {
+            constructor(x, y, vx, vy, size) {
+                this.x = x;
+                this.y = y;
+                this.vx = vx;
+                this.vy = vy;
+                this.size = size;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = 'white';
+                ctx.fill();
+            }
+        }
+
+        // Fixed target position (can be changed as needed)
+        const target = {
+            x: canvas.width / 2,  // Example: center of the canvas
+            y: canvas.height / 3
+        };
+
+        // Mouse position tracking
+        let mouseX = 0;
+        let mouseY = 0;
+
+        // Update mouse position
+        canvas.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        // Particle array
+        const particles = [];
+
+        // Emit particles towards the fixed target from the current mouse position
+        const emitParticles = (startX, startY) => {
+            // Calculate velocity towards the target
+            const vx = (target.x - startX) / 50;  // Speed towards target
+            const vy = (target.y - startY) / 50;  // Speed towards target
+            particles.push(new Particle(startX, startY, vx, vy, 3));  // Add particle
+        };
+
+        let isMouseDown = false;  // Track the mouse button state
+
+        // Mouse down event to start emitting particles
+        canvas.addEventListener('mousedown', (e) => {
+            isMouseDown = true; // Start emitting particles
+
+            // Emit particles continuously as long as the mouse button is held down
+            const continuousEmit = () => {
+                if (isMouseDown) {
+                    emitParticles(mouseX, mouseY); // Emit a particle from current mouse position
+                    requestAnimationFrame(continuousEmit); // Continue emitting
+                }
+            };
+
+            continuousEmit(); // Start continuous emission
+        });
+
+        // Mouse up event to stop emitting particles
+        canvas.addEventListener('mouseup', () => {
+            isMouseDown = false; // Stop emitting particles
+        });
+
+        // Animation loop
+        const animate = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw the fixed target point
+            ctx.beginPath();
+            ctx.arc(target.x, target.y, 5, 0, Math.PI * 2);
+            ctx.fillStyle = 'red';
+            ctx.fill();
+
+            // Update and draw particles
+            particles.forEach((particle) => {
+                particle.update();
+                particle.draw();
+            });
+
+            requestAnimationFrame(animate);
+        };
+
+        // Start the animation
+        animate();
+
     </script>
 </body>
 
