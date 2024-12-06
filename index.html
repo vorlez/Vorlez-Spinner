@@ -561,14 +561,28 @@
             canvas.height = window.innerHeight;
         });
 
-        // Particle class
+        // Particle class with random color, velocity, size, and speed variations
         class Particle {
             constructor(x, y, vx, vy, size) {
+                // Add random variation to the velocity to introduce more accuracy variation
+                const accuracy = (Math.random() - 0.5) * 0.5; // Random variation to add randomness in direction
+                this.vx = vx + accuracy; // Random horizontal velocity variation
+                this.vy = vy + accuracy; // Random vertical velocity variation
+
+                // Randomize particle size between a range (e.g., 2 to 6)
+                this.size = size + Math.random() * 3; // Random size variation
+
+                // Randomize speed (between 0.5 and 1.5 times the original speed)
+                const speedFactor = 0.5 + Math.random(); // Random factor between 0.5 and 1.5
+                this.vx *= speedFactor;
+                this.vy *= speedFactor;
+
+                // Random color (RGB format)
+                this.color = `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`;
+
+                // Particle position
                 this.x = x;
                 this.y = y;
-                this.vx = vx;
-                this.vy = vy;
-                this.size = size;
             }
 
             update() {
@@ -579,7 +593,7 @@
             draw() {
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = 'white';
+                ctx.fillStyle = this.color; // Use random color
                 ctx.fill();
             }
         }
