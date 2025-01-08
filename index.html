@@ -275,6 +275,7 @@
         let totalRotation = 0; // Cumulative rotation
         let isDragging = false; // Whether the wheel is being dragged
         let isSpinning = false; // Track if the wheel is spinning
+        let velocity = 0;  // Velocity of the wheel's spin
 
         const wheel = document.getElementById('wheel');
         const counterDisplay = document.getElementById('counter');
@@ -283,6 +284,7 @@
         const deleteButton = document.getElementById('deleteButton'); // Reference delete button
         const saveButton = document.getElementById('saveButton'); // Reference save button
         const loadButton = document.getElementById('loadButton'); // Reference load button
+        const friction = 0.98;  // Friction factor to gradually reduce velocity
 
         // Confirmation levels for delete
         const confirmationLevels = [
@@ -445,6 +447,9 @@
                 totalRotation += deltaAngle;
             }
 
+            // Update velocity during drag
+            velocity = deltaAngle;
+
             // Check if a full rotation is completed
             if (Math.abs(totalRotation) >= 360) {
                 count += multiplier;
@@ -463,10 +468,30 @@
             emitParticles(); // Emit particles during spin
         }
 
+
         function endDrag() {
             isDragging = false;
-            isSpinning = false; // Stop emitting particles when drag ends
+
+            // Start spinning with the last detected velocity
+            velocity = (currentAngle - lastAngle) / 10;  // Adjust the divisor to control sensitivity
+            spinWheel();
         }
+
+        function spinWheel() {
+            if (Math.abs(velocity) > 0.1) {
+                currentAngle = (currentAngle + velocity) % 360;
+                wheel.style.transform = `rotate(${currentAngle}deg)`;
+
+                // Emit particles during the spinning
+                emitParticles();
+
+                velocity *= friction;
+                requestAnimationFrame(spinWheel);
+            }
+        }
+
+
+
 
         // Handle upgrade button click
         function buyUpgrade() {
@@ -618,9 +643,8 @@
         const particles = [];
 
         // Emit particles only when the wheel is spinning
+        // Emit particles only when the wheel is spinning
         const emitParticles = () => {
-            if (!isSpinning) return; // Only emit if the wheel is spinning
-
             const rect = wheel.getBoundingClientRect();
             const centerX = rect.left + rect.width / 2;
             const centerY = rect.top + rect.height / 2;
@@ -635,6 +659,9 @@
 
             particles.push(new Particle(emissionX, emissionY, vx, vy, 3));
         };
+
+
+
         // Continuous particle emission function, modified to emit from the wheel
         const continuousEmit = () => {
             if (isMouseDown) {
