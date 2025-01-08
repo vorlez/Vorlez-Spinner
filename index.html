@@ -274,6 +274,7 @@
         let lastAngle = 0; // The last recorded angle
         let totalRotation = 0; // Cumulative rotation
         let isDragging = false; // Whether the wheel is being dragged
+        let isSpinning = false; // Track if the wheel is spinning
 
         const wheel = document.getElementById('wheel');
         const counterDisplay = document.getElementById('counter');
@@ -422,14 +423,13 @@
             return angle % 360;
         }
 
-        // Start dragging
         function startDrag(event) {
             isDragging = true;
             lastAngle = normalizeAngle(getAngle(event));
             wheel.style.transition = 'none'; // Disable smooth transition during drag
+            isSpinning = true; // Set spinning to true
         }
 
-        // Drag wheel
         function dragWheel(event) {
             if (!isDragging) return;
 
@@ -459,11 +459,13 @@
             counterDisplay.innerText = count;
 
             upgradeButton.disabled = count < upgradeCost;
+
+            emitParticles(); // Emit particles during spin
         }
 
-        // End dragging
         function endDrag() {
             isDragging = false;
+            isSpinning = false; // Stop emitting particles when drag ends
         }
 
         // Handle upgrade button click
@@ -615,13 +617,38 @@
         // Particle array
         const particles = [];
 
-        // Emit particles towards the fixed target from the current mouse position
-        const emitParticles = (startX, startY) => {
-            // Calculate velocity towards the target
-            const vx = (target.x - startX) / 50;  // Speed towards target
-            const vy = (target.y - startY) / 50;  // Speed towards target
-            particles.push(new Particle(startX, startY, vx, vy, 3));  // Add particle
+        // Emit particles only when the wheel is spinning
+        const emitParticles = () => {
+            if (!isSpinning) return; // Only emit if the wheel is spinning
+
+            const rect = wheel.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const radius = rect.width / 2;
+            const angleRad = currentAngle * (Math.PI / 180);
+
+            const emissionX = centerX + radius * Math.cos(angleRad);
+            const emissionY = centerY + radius * Math.sin(angleRad);
+
+            const vx = Math.cos(angleRad) * 3;
+            const vy = Math.sin(angleRad) * 3;
+
+            particles.push(new Particle(emissionX, emissionY, vx, vy, 3));
         };
+        // Continuous particle emission function, modified to emit from the wheel
+        const continuousEmit = () => {
+            if (isMouseDown) {
+                emitParticles(); // Emit a particle from the wheel
+                requestAnimationFrame(continuousEmit); // Continue emitting
+            }
+        };
+
+        // Start the continuous emission when the mouse is down
+        canvas.addEventListener('mousedown', () => {
+            isMouseDown = true;
+            continuousEmit();
+        });
+
 
         let isMouseDown = false;  // Track the mouse button state
 
@@ -649,11 +676,6 @@
         const animate = () => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Draw the fixed target point
-            ctx.beginPath();
-            ctx.arc(target.x, target.y, 5, 0, Math.PI * 2);
-            ctx.fillStyle = 'red';
-            ctx.fill();
 
             // Update and draw particles
             particles.forEach((particle) => {
