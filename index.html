@@ -1,28 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wheel Spinner</title>
     <style>
+        /* General body styling */
         body {
             font-family: Arial, sans-serif;
             text-align: center;
             margin: 0;
-            background-color: #222222;
-            /* Slightly darker grey */
-            color: #ffffff;
-            /* White text for contrast */
+            background-color: #222222; /* Slightly darker grey */
+            color: #ffffff; /* White text for contrast */
             transition: background-color 0.5s ease;
             overflow: hidden;
         }
 
-
+        /* Header styling */
         h1 {
-            color: #FFD700;
+            color: #FFD700; /* Gold color for headers */
         }
 
+        /* Top text styling */
         .topText {
             position: absolute;
             top: 20px;
@@ -30,12 +29,11 @@
             text-align: center;
             font-size: 24px;
             font-weight: bold;
-            color: #FFD700;
-            /* Gold color for text */
+            color: #FFD700; /* Gold color */
             margin: 0;
         }
 
-
+        /* Menu styling */
         .menu {
             position: absolute;
             top: 20px;
@@ -46,7 +44,7 @@
         }
 
         .menu button {
-            background-color: #FFD700;
+            background-color: #FFD700; /* Gold button */
             border: none;
             color: white;
             padding: 10px;
@@ -57,9 +55,10 @@
         }
 
         .menu button:hover {
-            background-color: #ffbf00;
+            background-color: #ffbf00; /* Hover effect for menu buttons */
         }
 
+        /* Wheel container and wheel styling */
         .wheel-container {
             position: absolute;
             top: 50%;
@@ -80,8 +79,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #00FF00;
-            /* Bright green */
+            color: #00FF00; /* Bright green text */
             font-size: 24px;
             font-weight: bold;
             user-select: none;
@@ -90,7 +88,7 @@
         }
 
         .wheel:active {
-            cursor: grabbing;
+            cursor: grabbing; /* Change cursor when wheel is being dragged */
         }
 
         .arrow {
@@ -102,39 +100,35 @@
             height: 0;
             border-left: 20px solid transparent;
             border-right: 20px solid transparent;
-            border-bottom: 40px solid #FFD700;
+            border-bottom: 40px solid #FFD700; /* Gold arrow */
         }
 
+        /* Counter and text displays */
         .counter,
         .upgrade,
         .coins-per-spin {
             font-size: 28px;
             font-weight: bold;
-            color: #FFD700;
+            color: #FFD700; /* Gold color */
         }
 
-
-        /* Position the upgrade container on the right */
+        /* Upgrade container styling (positioned on the right) */
         .upgrade-container {
             position: absolute;
             top: 50%;
             right: 20px;
-            /* Aligns the container to the right side */
-            transform: translateY(-50%);
-            /* Vertically center the container */
+            transform: translateY(-50%); /* Vertically center */
             display: block;
         }
 
-        /* Style for the upgrade buttons */
         .coins-section {
-            margin-bottom: 10px;
-            /* Space out the buttons */
+            margin-bottom: 10px; /* Space between upgrade buttons */
         }
 
         .upgrade-button {
             font-size: 18px;
-            background-color: #FFD700;
-            color: #121212;
+            background-color: #FFD700; /* Gold button */
+            color: #121212; /* Dark text */
             border: none;
             border-radius: 5px;
             cursor: pointer;
@@ -144,17 +138,15 @@
         }
 
         .upgrade-button:hover {
-            background-color: #ffbf00;
+            background-color: #ffbf00; /* Hover effect */
         }
 
-
-
-
         .upgrade-button:disabled {
-            background-color: #555;
+            background-color: #555; /* Disabled state */
             cursor: not-allowed;
         }
 
+        /* Options container styling */
         .options-container {
             margin-top: 50px;
         }
@@ -173,14 +165,14 @@
 
         .save-button:hover,
         .load-button:hover {
-            background-color: #28a745;
+            background-color: #28a745; /* Hover effect */
         }
 
         .delete-button {
             margin-top: 20px;
             padding: 10px 20px;
             font-size: 18px;
-            background-color: #ff4c4c;
+            background-color: #ff4c4c; /* Red button */
             color: white;
             border: none;
             border-radius: 5px;
@@ -192,9 +184,10 @@
         }
 
         .delete-button:hover {
-            background-color: #ff1a1a;
+            background-color: #ff1a1a; /* Hover effect */
         }
 
+        /* Section visibility */
         .coins-section,
         .upgrade-section {
             display: block;
@@ -204,20 +197,6 @@
             display: none;
         }
 
-        /* New styling for upgrades to be on the right */
-        .upgrade-section {
-            position: absolute;
-            top: 50%;
-            right: 20px;
-            transform: translateY(-50%);
-            /* Center vertically */
-        }
-
-        .upgrade-button {
-            margin-bottom: 10px;
-            /* Space out the buttons */
-        }
-
         .canvas {
             display: block;
         }
@@ -225,255 +204,144 @@
 </head>
 
 <body>
-    <!-- Menu -->
+    <!-- Navigation menu -->
     <div class="menu">
         <button onclick="goToWheel()">Go to Wheel</button>
         <button onclick="goToOptions()">Options</button>
     </div>
 
-
+    <!-- Top instructional text -->
     <div class="topText" id="topText">Spin to get coins!</div>
 
-    <!-- Wheel container -->
+    <!-- Wheel and counters -->
     <div class="wheel-container" id="wheelPage">
-        <!-- <div class="arrow"></div> -->
-
         <div class="wheel" id="wheel">Spin Me!!</div>
-
         <p>Coins: <span class="counter" id="counter">0</span></p>
         <p>Coins per Spin: <span class="coins-per-spin" id="coinsPerSpin">1</span></p>
         <p>Coins per Second: <span class="coins-per-second" id="coinsPerSecond">0</span></p>
     </div>
 
-    <!-- Upgrade container on the right side -->
+    <!-- Upgrade buttons on the right -->
     <div class="upgrade-container" id="upgradeContainer">
         <div class="coins-section">
             <button id="upgradeButton" class="upgrade-button" disabled>Upgrade (20 coins)</button>
         </div>
-
         <div class="coins-section">
             <button id="coinsPerSecondUpgradeButton" class="upgrade-button">CPS Upgrade (50 coins)</button>
         </div>
     </div>
 
-    <!-- Options container -->
+    <!-- Options page (hidden by default) -->
     <div class="options-container" id="optionsPage" style="display: none;">
         <button class="save-button" id="saveButton">Save to File</button>
         <button class="load-button" id="loadButton">Load from File</button>
         <button class="delete-button" id="deleteButton">Delete All Progress</button>
     </div>
 
+    <!-- Particle canvas -->
     <canvas id="particleCanvas" class="canvas"></canvas>
 
-
     <script>
-        let count = localStorage.getItem('coinCount') ? parseInt(localStorage.getItem('coinCount')) : 0; // Load saved coin count
-        let multiplier = localStorage.getItem('coinMultiplier') ? parseInt(localStorage.getItem('coinMultiplier')) : 1; // Load saved multiplier
-        let upgradeCost = localStorage.getItem('upgradeCost') ? parseInt(localStorage.getItem('upgradeCost')) : 20; // Load saved upgrade cost
-        let currentAngle = 0; // The current angle of the wheel
-        let lastAngle = 0; // The last recorded angle
-        let totalRotation = 0; // Cumulative rotation
-        let isDragging = false; // Whether the wheel is being dragged
-        let isSpinning = false; // Track if the wheel is spinning
-        let velocity = 0;  // Velocity of the wheel's spin
+        // Game state variables
+        let count = localStorage.getItem('coinCount') ? parseInt(localStorage.getItem('coinCount')) : 0;
+        let multiplier = localStorage.getItem('coinMultiplier') ? parseInt(localStorage.getItem('coinMultiplier')) : 1;
+        let upgradeCost = localStorage.getItem('upgradeCost') ? parseInt(localStorage.getItem('upgradeCost')) : 20;
+        let cps = localStorage.getItem('coinsPerSecond') ? parseInt(localStorage.getItem('coinsPerSecond')) : 0;
+        let cpsUpgradeCost = localStorage.getItem('cpsUpgradeCost') ? parseInt(localStorage.getItem('cpsUpgradeCost')) : 50;
+        let currentAngle = 0;
+        let lastAngle = 0;
+        let totalRotation = 0;
+        let isDragging = false;
+        let isSpinning = false;
+        let velocity = 0;
+        const friction = 0.98;
 
+        // DOM elements
         const wheel = document.getElementById('wheel');
         const counterDisplay = document.getElementById('counter');
-        const upgradeButton = document.getElementById('upgradeButton');
         const coinsPerSpinDisplay = document.getElementById('coinsPerSpin');
-        const deleteButton = document.getElementById('deleteButton'); // Reference delete button
-        const saveButton = document.getElementById('saveButton'); // Reference save button
-        const loadButton = document.getElementById('loadButton'); // Reference load button
-        const friction = 0.98;  // Friction factor to gradually reduce velocity
+        const coinsPerSecondDisplay = document.getElementById('coinsPerSecond');
+        const upgradeButton = document.getElementById('upgradeButton');
+        const cpsUpgradeButton = document.getElementById('coinsPerSecondUpgradeButton');
+        const saveButton = document.getElementById('saveButton');
+        const loadButton = document.getElementById('loadButton');
+        const deleteButton = document.getElementById('deleteButton');
 
-        // Confirmation levels for delete
+        // Confirmation messages for delete action
         const confirmationLevels = [
             "Are you sure you want to delete all progress? This action cannot be undone.",
             "All progress will be lost forever. Proceed?",
             "Final warning: Click OK to erase everything."
         ];
 
-        // Handle delete button click
-        deleteButton.addEventListener('click', () => {
-            function askConfirmation(level) {
-                if (level >= confirmationLevels.length) {
-                    // Final level reached, perform the reset
-                    localStorage.clear(); // Clear localStorage
-                    count = 0;
-                    multiplier = 1;
-                    upgradeCost = 20;
-                    currentAngle = 0; // Reset wheel angle
-                    totalRotation = 0; // Reset rotation state
-
-                    // Reset displays
-                    counterDisplay.innerText = count;
-                    coinsPerSpinDisplay.innerText = multiplier;
-                    upgradeButton.innerText = `Upgrade (${upgradeCost} coins)`;
-                    upgradeButton.disabled = true;
-                    wheel.style.transform = `rotate(${currentAngle}deg)`; // Reset wheel's visual rotation
-
-                    alert("All progress has been deleted.");
-                    return;
-                }
-
-                // Show the confirmation message for the current level
-                const confirmed = confirm(confirmationLevels[level]);
-                if (confirmed) {
-                    askConfirmation(level + 1); // Proceed to the next confirmation
-                }
-            }
-
-            askConfirmation(0); // Start with the first confirmation message
-        });
-
-        // Handle save button click
-        saveButton.addEventListener('click', () => {
-            const progressData = {
-                count: count,
-                multiplier: multiplier,
-                upgradeCost: upgradeCost
-            };
-            const fileName = "wheel_progress.json";
-            const fileBlob = new Blob([JSON.stringify(progressData)], { type: "application/json" });
-            const fileUrl = URL.createObjectURL(fileBlob);
-            const link = document.createElement('a');
-            link.href = fileUrl;
-            link.download = fileName;
-            link.click();
-        });
-
-        // Handle load button click
-        loadButton.addEventListener('click', () => {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.json';
-            input.click();
-
-            input.addEventListener('change', () => {
-                const file = input.files[0];
-                if (!file) return;
-
-                const reader = new FileReader();
-                reader.onload = () => {
-                    const data = JSON.parse(reader.result);
-                    count = data.count || 0;
-                    multiplier = data.multiplier || 1;
-                    upgradeCost = data.upgradeCost || 20;
-
-                    // Update localStorage
-                    localStorage.setItem('coinCount', count);
-                    localStorage.setItem('coinMultiplier', multiplier);
-                    localStorage.setItem('upgradeCost', upgradeCost);
-
-                    // Update UI
-                    counterDisplay.innerText = count;
-                    coinsPerSpinDisplay.innerText = multiplier;
-                    upgradeButton.innerText = `Upgrade (${upgradeCost} coins)`;
-                    upgradeButton.disabled = count < upgradeCost;
-
-                    alert("Progress loaded successfully.");
-                };
-                reader.readAsText(file);
-            });
-        });
-
-        // Function to set the background color
+        // Page navigation functions
         function setBackgroundColor(color) {
             document.body.style.backgroundColor = color;
         }
 
-        // Modify goToWheel and goToOptions to include the background color change
         function goToWheel() {
             document.getElementById('wheelPage').style.display = 'block';
             document.getElementById('optionsPage').style.display = 'none';
-            document.getElementById('upgradeContainer').style.display = 'block'; // Show upgrade container when in the Wheel page
-            document.getElementById('topText').style.display = 'block'; // Show top text
-            setBackgroundColor('#222222'); // Darker color for the wheel page
+            document.getElementById('upgradeContainer').style.display = 'block';
+            document.getElementById('topText').style.display = 'block';
+            setBackgroundColor('#222222');
         }
 
         function goToOptions() {
             document.getElementById('wheelPage').style.display = 'none';
             document.getElementById('optionsPage').style.display = 'block';
-            document.getElementById('upgradeContainer').style.display = 'none'; // Hide upgrade container when in the Options page
-            document.getElementById('topText').style.display = 'none'; // Hide top text
-            setBackgroundColor('#3E1111'); // Lighter color for the options page
+            document.getElementById('upgradeContainer').style.display = 'none';
+            document.getElementById('topText').style.display = 'none';
+            setBackgroundColor('#3E1111');
         }
 
-
-        // Ensure the wheel is always centered when returning to the wheel page
-        function centerWheel() {
-            const wheelPage = document.getElementById('wheelPage');
-            wheelPage.style.margin = '20px auto';
-            wheelPage.style.display = 'inline-block';
-        }
-
-        // Get the mouse angle relative to the center of the wheel
+        // Wheel interaction functions
         function getAngle(event) {
             const rect = wheel.getBoundingClientRect();
             const centerX = rect.left + rect.width / 2;
             const centerY = rect.top + rect.height / 2;
-            const dx = event.clientX - centerX;
-            const dy = event.clientY - centerY;
-            return Math.atan2(dy, dx) * (180 / Math.PI);
+            return Math.atan2(event.clientY - centerY, event.clientX - centerX) * (180 / Math.PI);
         }
 
-        // Normalize the angle between 0 and 360 degrees
         function normalizeAngle(angle) {
-            if (angle < 0) {
-                angle += 360;
-            }
-            return angle % 360;
+            return angle < 0 ? (angle + 360) % 360 : angle % 360;
         }
 
         function startDrag(event) {
             isDragging = true;
             lastAngle = normalizeAngle(getAngle(event));
-            wheel.style.transition = 'none'; // Disable smooth transition during drag
-            isSpinning = true; // Set spinning to true
+            wheel.style.transition = 'none';
+            isSpinning = true;
         }
 
         function dragWheel(event) {
             if (!isDragging) return;
-
             const currentAngleNow = normalizeAngle(getAngle(event));
-            const deltaAngle = currentAngleNow - lastAngle;
+            let deltaAngle = currentAngleNow - lastAngle;
 
-            // Handle angle wrap-around from 0 to 360
-            if (deltaAngle > 180) {
-                totalRotation -= 360 - deltaAngle;
-            } else if (deltaAngle < -180) {
-                totalRotation += 360 + deltaAngle;
-            } else {
-                totalRotation += deltaAngle;
-            }
+            if (deltaAngle > 180) deltaAngle -= 360;
+            else if (deltaAngle < -180) deltaAngle += 360;
 
-            // Update velocity during drag
+            totalRotation += deltaAngle;
             velocity = deltaAngle;
 
-            // Check if a full rotation is completed
             if (Math.abs(totalRotation) >= 360) {
                 count += multiplier;
                 totalRotation = 0;
                 localStorage.setItem('coinCount', count);
             }
 
-            // Update wheel rotation
             currentAngle = (currentAngle + deltaAngle) % 360;
             wheel.style.transform = `rotate(${currentAngle}deg)`;
             lastAngle = currentAngleNow;
             counterDisplay.innerText = count;
-
             upgradeButton.disabled = count < upgradeCost;
-
-            emitParticles(); // Emit particles during spin
+            emitParticles();
         }
-
 
         function endDrag() {
             isDragging = false;
-
-            // Start spinning with the last detected velocity
-            velocity = (currentAngle - lastAngle) / 10;  // Adjust the divisor to control sensitivity
+            velocity = (currentAngle - lastAngle) / 10;
             spinWheel();
         }
 
@@ -481,103 +349,124 @@
             if (Math.abs(velocity) > 0.1) {
                 currentAngle = (currentAngle + velocity) % 360;
                 wheel.style.transform = `rotate(${currentAngle}deg)`;
-
-                // Emit particles during the spinning
                 emitParticles();
-
                 velocity *= friction;
                 requestAnimationFrame(spinWheel);
             }
         }
 
-
-
-
-        // Handle upgrade button click
+        // Upgrade functions
         function buyUpgrade() {
             if (count >= upgradeCost) {
                 count -= upgradeCost;
                 multiplier *= 2;
                 upgradeCost = Math.ceil(upgradeCost * 2.5);
-                localStorage.setItem('coinCount', count);
-                localStorage.setItem('coinMultiplier', multiplier);
-                localStorage.setItem('upgradeCost', upgradeCost);
-                counterDisplay.innerText = count;
-                coinsPerSpinDisplay.innerText = multiplier;
-                upgradeButton.innerText = `Upgrade (${upgradeCost} coins)`;
-                upgradeButton.disabled = count < upgradeCost;
+                updateStorageAndUI();
             }
         }
 
-
-        // Variables for Coins per Second
-        let cps = localStorage.getItem('coinsPerSecond') ? parseInt(localStorage.getItem('coinsPerSecond')) : 0;
-        let cpsUpgradeCost = localStorage.getItem('cpsUpgradeCost') ? parseInt(localStorage.getItem('cpsUpgradeCost')) : 50;
-
-        const coinsPerSecondDisplay = document.getElementById('coinsPerSecond');
-        const cpsUpgradeButton = document.getElementById('coinsPerSecondUpgradeButton');
-
-        // Update Coins per Second display
-        coinsPerSecondDisplay.innerText = cps;
-        cpsUpgradeButton.innerText = `CPS Upgrade (${cpsUpgradeCost} coins)`;
-
-        // Function to buy CPS upgrade
         function buyCpsUpgrade() {
             if (count >= cpsUpgradeCost) {
                 count -= cpsUpgradeCost;
-                cps = 1 + cps * 2; // Increase coins per second by 1
-                cpsUpgradeCost = Math.ceil(cpsUpgradeCost * 2.5); // Increase cost for next upgrade
-
-                // Save to localStorage
-                localStorage.setItem('coinCount', count);
+                cps = 1 + cps * 2;
+                cpsUpgradeCost = Math.ceil(cpsUpgradeCost * 2.5);
                 localStorage.setItem('coinsPerSecond', cps);
                 localStorage.setItem('cpsUpgradeCost', cpsUpgradeCost);
-
-                // Update UI
-                counterDisplay.innerText = count;
-                coinsPerSecondDisplay.innerText = cps;
-                cpsUpgradeButton.innerText = `CPS Upgrade (${cpsUpgradeCost} coins)`;
-                cpsUpgradeButton.disabled = count < cpsUpgradeCost;
+                updateStorageAndUI();
             }
         }
 
-        // Generate coins per second
+        function updateStorageAndUI() {
+            localStorage.setItem('coinCount', count);
+            localStorage.setItem('coinMultiplier', multiplier);
+            localStorage.setItem('upgradeCost', upgradeCost);
+            counterDisplay.innerText = count;
+            coinsPerSpinDisplay.innerText = multiplier;
+            coinsPerSecondDisplay.innerText = cps;
+            upgradeButton.innerText = `Upgrade (${upgradeCost} coins)`;
+            cpsUpgradeButton.innerText = `CPS Upgrade (${cpsUpgradeCost} coins)`;
+            upgradeButton.disabled = count < upgradeCost;
+            cpsUpgradeButton.disabled = count < cpsUpgradeCost;
+        }
+
+        // Save/Load/Delete functions
+        function saveProgress() {
+            const progressData = { count, multiplier, upgradeCost, cps, cpsUpgradeCost };
+            const fileBlob = new Blob([JSON.stringify(progressData)], { type: "application/json" });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(fileBlob);
+            link.download = "wheel_progress.json";
+            link.click();
+        }
+
+        function loadProgress() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.click();
+            input.addEventListener('change', () => {
+                const file = input.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const data = JSON.parse(reader.result);
+                    count = data.count || 0;
+                    multiplier = data.multiplier || 1;
+                    upgradeCost = data.upgradeCost || 20;
+                    cps = data.cps || 0;
+                    cpsUpgradeCost = data.cpsUpgradeCost || 50;
+                    updateStorageAndUI();
+                    alert("Progress loaded successfully.");
+                };
+                reader.readAsText(file);
+            });
+        }
+
+        function deleteProgress() {
+            function askConfirmation(level) {
+                if (level >= confirmationLevels.length) {
+                    localStorage.clear();
+                    count = 0;
+                    multiplier = 1;
+                    upgradeCost = 20;
+                    cps = 0;
+                    cpsUpgradeCost = 50;
+                    currentAngle = totalRotation = 0;
+                    wheel.style.transform = `rotate(${currentAngle}deg)`;
+                    updateStorageAndUI();
+                    alert("All progress has been deleted.");
+                    return;
+                }
+                if (confirm(confirmationLevels[level])) askConfirmation(level + 1);
+            }
+            askConfirmation(0);
+        }
+
+        // Coins per second logic
         setInterval(() => {
             count += cps;
             localStorage.setItem('coinCount', count);
             counterDisplay.innerText = count;
-
-            // Enable/disable buttons based on count
             upgradeButton.disabled = count < upgradeCost;
             cpsUpgradeButton.disabled = count < cpsUpgradeCost;
-        }, 1000); // Trigger every second
+        }, 1000);
 
-        // Add event listener for CPS upgrade button
-        cpsUpgradeButton.addEventListener('click', buyCpsUpgrade);
-
-        // Initialize CPS upgrade button state
-        cpsUpgradeButton.disabled = count < cpsUpgradeCost;
-
-
-
-        // Event listeners
+        // Event listeners for wheel and buttons
         wheel.addEventListener('mousedown', startDrag);
         document.addEventListener('mousemove', dragWheel);
         document.addEventListener('mouseup', endDrag);
         upgradeButton.addEventListener('click', buyUpgrade);
+        cpsUpgradeButton.addEventListener('click', buyCpsUpgrade);
+        saveButton.addEventListener('click', saveProgress);
+        loadButton.addEventListener('click', loadProgress);
+        deleteButton.addEventListener('click', deleteProgress);
 
-        // Initialize displays
-        counterDisplay.innerText = count;
-        coinsPerSpinDisplay.innerText = multiplier;
-        upgradeButton.innerText = `Upgrade (${upgradeCost} coins)`;
-        upgradeButton.disabled = count < upgradeCost;
+        // Initial UI setup
+        updateStorageAndUI();
 
-
-
+        // Particle system
         const canvas = document.getElementById('particleCanvas');
         const ctx = canvas.getContext('2d');
-
-        // Resize canvas
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
@@ -586,26 +475,16 @@
             canvas.height = window.innerHeight;
         });
 
-        // Particle class with random color, velocity, size, and speed variations
         class Particle {
             constructor(x, y, vx, vy, size) {
-                // Add random variation to the velocity to introduce more accuracy variation
-                const accuracy = (Math.random() - 0.5) * 0.5; // Random variation to add randomness in direction
-                this.vx = vx + accuracy; // Random horizontal velocity variation
-                this.vy = vy + accuracy; // Random vertical velocity variation
-
-                // Randomize particle size between a range (e.g., 2 to 6)
-                this.size = size + Math.random() * 3; // Random size variation
-
-                // Randomize speed (between 0.5 and 1.5 times the original speed)
-                const speedFactor = 0.5 + Math.random(); // Random factor between 0.5 and 1.5
+                const accuracy = (Math.random() - 0.5) * 0.5;
+                this.vx = vx + accuracy;
+                this.vy = vy + accuracy;
+                this.size = size + Math.random() * 3;
+                const speedFactor = 0.5 + Math.random();
                 this.vx *= speedFactor;
                 this.vy *= speedFactor;
-
-                // Random color (RGB format)
                 this.color = `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`;
-
-                // Particle position
                 this.x = x;
                 this.y = y;
             }
@@ -618,105 +497,35 @@
             draw() {
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = this.color; // Use random color
+                ctx.fillStyle = this.color;
                 ctx.fill();
             }
         }
 
-        // Fixed target position (can be changed as needed)
-        const target = {
-            x: canvas.width / 2,  // Example: center of the canvas
-            y: canvas.height / 3
-        };
-
-        // Mouse position tracking
-        let mouseX = 0;
-        let mouseY = 0;
-
-        // Update mouse position
-        canvas.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-        });
-
-        // Particle array
         const particles = [];
-
-        // Emit particles only when the wheel is spinning
-        // Emit particles only when the wheel is spinning
-        const emitParticles = () => {
+        function emitParticles() {
             const rect = wheel.getBoundingClientRect();
             const centerX = rect.left + rect.width / 2;
             const centerY = rect.top + rect.height / 2;
             const radius = rect.width / 2;
             const angleRad = currentAngle * (Math.PI / 180);
-
             const emissionX = centerX + radius * Math.cos(angleRad);
             const emissionY = centerY + radius * Math.sin(angleRad);
-
             const vx = Math.cos(angleRad) * 3;
             const vy = Math.sin(angleRad) * 3;
-
             particles.push(new Particle(emissionX, emissionY, vx, vy, 3));
-        };
+        }
 
-
-
-        // Continuous particle emission function, modified to emit from the wheel
-        const continuousEmit = () => {
-            if (isMouseDown) {
-                emitParticles(); // Emit a particle from the wheel
-                requestAnimationFrame(continuousEmit); // Continue emitting
-            }
-        };
-
-        // Start the continuous emission when the mouse is down
-        canvas.addEventListener('mousedown', () => {
-            isMouseDown = true;
-            continuousEmit();
-        });
-
-
-        let isMouseDown = false;  // Track the mouse button state
-
-        // Mouse down event to start emitting particles
-        canvas.addEventListener('mousedown', (e) => {
-            isMouseDown = true; // Start emitting particles
-
-            // Emit particles continuously as long as the mouse button is held down
-            const continuousEmit = () => {
-                if (isMouseDown) {
-                    emitParticles(mouseX, mouseY); // Emit a particle from current mouse position
-                    requestAnimationFrame(continuousEmit); // Continue emitting
-                }
-            };
-
-            continuousEmit(); // Start continuous emission
-        });
-
-        // Mouse up event to stop emitting particles
-        canvas.addEventListener('mouseup', () => {
-            isMouseDown = false; // Stop emitting particles
-        });
-
-        // Animation loop
-        const animate = () => {
+        function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-
-            // Update and draw particles
-            particles.forEach((particle) => {
+            particles.forEach(particle => {
                 particle.update();
                 particle.draw();
             });
-
             requestAnimationFrame(animate);
-        };
+        }
 
-        // Start the animation
         animate();
-
     </script>
 </body>
-
 </html>
